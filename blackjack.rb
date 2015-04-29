@@ -30,7 +30,7 @@ RANKS = %w{2 3 4 5 6 7 8 9 10 J Q K A}
 SUITS = %w{Hearts Spades Diamonds Clubs}
 
 
-# Build deck of cards and color black/red based on suit
+# Build deck of cards, with blackjack value and color black/red based on suit
 def build_deck_of_cards(deck)
   SUITS.each do |suit|
     RANKS.each_with_index do |rank, i|
@@ -89,7 +89,7 @@ def display_hands(player_hand, computer_hand, player_name)
   puts ""
 end
 
-# Display hands, including dealer's first card.
+# Display hands, revealing dealer's first card.
 def display_final_hands(player_hand, computer_hand, player_name)
   sleep(1)
   system 'clear'
@@ -128,6 +128,7 @@ def bust?(hand)
   end
 end
 
+# Game loop
 loop do
 
   puts "\nWould you like to play blackjack?  (y/n)"
@@ -135,7 +136,7 @@ loop do
 
   system 'clear'
 
-  # Initialize deck, player/computer hands for new game, hit/stand check variable (before loop).
+  # Initialize deck, player/computer hands for new game, hit/stand check variable (before hit/stay loop).
   card_deck = {}
   player_hand = {}
   computer_hand = {}
@@ -220,7 +221,7 @@ loop do
         break
       elsif get_hand_value(player_hand) < get_hand_value(computer_hand)
         display_final_hands(player_hand, computer_hand, player_name)
-        puts "Computer wins!"
+        puts "Computer wins.  :-("
         break
       else
         puts "Push."
