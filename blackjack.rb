@@ -1,28 +1,3 @@
-# -start of game-
-# 1. Deal cards (2 for dealer (one visible), 2 for player)
-# 2. Check for winner
-#     -- Player has 21
-#         -- Player wins
-#     -- Dealer has 21
-#         -- Dealer wins
-#     -- Both have 21
-#         -- Push? or Player auto wins?
-#
-# -loop-
-# 4. Ask player to hit or stay.
-#     -- hit?  -  draw and display card from deck
-#     -- stay?  -  do nothing
-# 5. Did player hit or stay?
-#     -- Stay  -  dealer hits until over 17 or bust
-#         -- bust?  -  player wins
-#         -- over 17?  -  check for winner or push
-#     -- Hit  -  dealer hits once
-#         -- dealer over 17 or bust?
-#             -- bust?  -  player wins
-#             -- over 17?  -  check for winner or push
-#             -- not over 17?  -  got back to start of loop
-
-
 require 'pry'
 require 'colorize'
 
@@ -103,6 +78,7 @@ def display_final_hands(player_hand, computer_hand, player_name)
   puts ""
 end
 
+# Return hand value, decreasing value of an Ace if it would cause the hand to exceed 21
 def get_hand_value(hand)
   value = 0
   if hand.values.reduce(:+) <= 21
@@ -126,6 +102,10 @@ def bust?(hand)
   else
     false
   end
+end
+
+def player_turn(player_hand, deck)
+
 end
 
 # Game loop
@@ -168,6 +148,7 @@ loop do
 
   # Enter hit/stay cycle
   loop do
+    # Prevent further prompting if player earlier chose to stand.
     if hit_or_stand != "stand"
       puts "Would you like to (hit) or (stand)?"
       hit_or_stand = gets.chomp.downcase
@@ -191,7 +172,7 @@ loop do
       break
     end
 
-    # Computer hit?
+    # Should Computer hit?
     if get_hand_value(computer_hand) < 17
       puts "Computer hits."
       deal_card(computer_hand, card_deck)
