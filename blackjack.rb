@@ -4,11 +4,10 @@ require 'colorize'
 RANKS = %w{2 3 4 5 6 7 8 9 10 J Q K A}
 SUITS = %w{Hearts Spades Diamonds Clubs}
 
-
 # Build deck of cards, with blackjack value and color black/red based on suit
 def build_deck_of_cards(deck)
   SUITS.each do |suit|
-    RANKS.each_with_index do |rank, i|
+    RANKS.each do |rank|
       if suit == "Hearts" || suit == "Diamonds"
         if rank.match(/[B-Z]/)
           deck["#{rank} of #{suit}".red] = 10
@@ -28,11 +27,6 @@ def build_deck_of_cards(deck)
       end
     end
   end
-end
-
-# Shouldn't need to actually use this in-game
-def print_cards(deck)
-  deck.each { |k,v| puts "#{k} -- #{v}"}
 end
 
 def deal_card(hand, deck)
@@ -104,10 +98,6 @@ def bust?(hand)
   end
 end
 
-def player_turn(player_hand, deck)
-
-end
-
 # Game loop
 loop do
 
@@ -118,20 +108,18 @@ loop do
 
   # Initialize deck, player/computer hands for new game, hit/stand check variable (before hit/stay loop).
   card_deck = {}
+  build_deck_of_cards(card_deck)
   player_hand = {}
   computer_hand = {}
   hit_or_stand = ""
-  build_deck_of_cards(card_deck)
 
   puts "Lets go!\n"
   puts "Please enter your name:"
   player_name = gets.chomp.capitalize
 
   # Deal first hands
-  deal_card(computer_hand, card_deck)
-  deal_card(player_hand, card_deck)
-  deal_card(computer_hand, card_deck)
-  deal_card(player_hand, card_deck)
+  2.times { deal_card(computer_hand, card_deck) }
+  2.times { deal_card(player_hand, card_deck) }
 
   display_hands(player_hand, computer_hand, player_name)
 
@@ -183,7 +171,7 @@ loop do
     display_hands(player_hand, computer_hand, player_name)
 
     # Check for computer bust
-    if get_hand_value(computer_hand) > 21
+    if bust?(computer_hand)
       display_final_hands(player_hand, computer_hand, player_name)
       puts "Computer busts!"
       puts "#{player_name} wins!"
