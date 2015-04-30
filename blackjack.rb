@@ -98,6 +98,14 @@ def bust?(hand)
   end
 end
 
+def check_final_winner(player_hand, computer_hand, player_name)
+  display_final_hands(player_hand, computer_hand, player_name)
+  if get_hand_value(player_hand) > get_hand_value(computer_hand) then  puts "#{player_name} wins!"
+  elsif get_hand_value(player_hand) < get_hand_value(computer_hand) then puts "Computer wins.  :-("
+  else puts "Push."
+  end
+end
+
 # Game loop
 loop do
 
@@ -184,17 +192,8 @@ loop do
     if hit_or_stand == "stand"
       if get_hand_value(computer_hand) < 17
         next
-      elsif get_hand_value(player_hand) > get_hand_value(computer_hand)
-        display_final_hands(player_hand, computer_hand, player_name)
-        puts "#{player_name} wins!"
-        break
-      elsif get_hand_value(player_hand) < get_hand_value(computer_hand)
-        display_final_hands(player_hand, computer_hand, player_name)
-        puts "Computer wins.  :-("
-        break
       else
-        display_final_hands(player_hand, computer_hand, player_name)
-        puts "Push."
+        check_final_winner(player_hand, computer_hand, player_name)
         break
       end
     end
