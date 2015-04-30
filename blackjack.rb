@@ -136,13 +136,13 @@ loop do
 
   # Enter hit/stay cycle
   loop do
-    # Prevent further prompting if player earlier chose to stand.
+    # Prevent further prompting if player chose to stand in a previous pass through loop.
     if hit_or_stand != "stand"
       puts "Would you like to (hit) or (stand)?"
       hit_or_stand = gets.chomp.downcase
     end
 
-    #Player hit or stand
+    # Player hit or stand
     if hit_or_stand == "hit"
       puts  "#{player_name} hits."
       deal_card(player_hand, card_deck)
@@ -193,6 +193,7 @@ loop do
         puts "Computer wins.  :-("
         break
       else
+        display_final_hands(player_hand, computer_hand, player_name)
         puts "Push."
         break
       end
