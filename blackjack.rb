@@ -36,7 +36,7 @@ def deal_card(hand, deck)
 end
 
 def show_player_hand(hand, player_name)
-  puts "\n*** #{player_name}'s Hand -- Value: #{get_hand_value(hand)} ***"
+  puts "\n*** #{player_name}'s Hand -- Value: #{calculate_hand_value(hand)} ***"
   hand.each_key do |card|
     puts "#{card}"
   end
@@ -63,7 +63,7 @@ def display_final_hands(player_hand, computer_hand, player_name)
   sleep(1)
   system 'clear'
 
-  puts "\n*** Computer's Hand  -- Value: #{get_hand_value(computer_hand)} ***"
+  puts "\n*** Computer's Hand  -- Value: #{calculate_hand_value(computer_hand)} ***"
   computer_hand.each_key do |card|
     puts "#{card}"
   end
@@ -73,7 +73,7 @@ def display_final_hands(player_hand, computer_hand, player_name)
 end
 
 # Return hand value, decreasing value of an Ace if it would cause the hand to exceed 21
-def get_hand_value(hand)
+def calculate_hand_value(hand)
   value = 0
   if hand.values.reduce(:+) <= 21
     value = hand.values.reduce(:+)
@@ -90,19 +90,15 @@ def get_hand_value(hand)
 
 end
 
-def bust?(hand)
-  if get_hand_value(hand) > 21
-    true
-  else
-    false
-  end
-end
-
 def check_final_winner(player_hand, computer_hand, player_name)
   display_final_hands(player_hand, computer_hand, player_name)
-  if get_hand_value(player_hand) > get_hand_value(computer_hand) then  puts "#{player_name} wins!"
-  elsif get_hand_value(player_hand) < get_hand_value(computer_hand) then puts "Computer wins.  :-("
-  else puts "Push."
+
+  if calculate_hand_value(player_hand) > calculate_hand_value(computer_hand)
+    puts "#{player_name} wins!"
+  elsif calculate_hand_value(player_hand) < calculate_hand_value(computer_hand)
+    puts "Computer wins.  :-("
+  else
+    puts "Push."
   end
 end
 
@@ -119,7 +115,7 @@ loop do
   build_deck_of_cards(card_deck)
   player_hand = {}
   computer_hand = {}
-  hit_or_stand = ""
+  hit_or_stand = "hit"
 
   puts "Lets go!\n"
   puts "Please enter your name:"
@@ -132,11 +128,11 @@ loop do
   display_hands(player_hand, computer_hand, player_name)
 
   # Check for first-hand victory
-  if get_hand_value(player_hand) == 21
+  if calculate_hand_value(player_hand) == 21
     display_final_hands(player_hand, computer_hand, player_name)
     puts "Blackjack!   #{player_name} wins!"
     next
-  elsif get_hand_value(computer_hand) == 21
+  elsif calculate_hand_value(computer_hand) == 21
     display_final_hands(player_hand, computer_hand, player_name)
     puts "Computer wins with 21."
     next
@@ -144,10 +140,14 @@ loop do
 
   # Enter hit/stay cycle
   loop do
-    # Prevent further prompting if player chose to stand in a previous pass through loop.
-    if hit_or_stand != "stand"
-      puts "Would you like to (hit) or (stand)?"
-      hit_or_stand = gets.chomp.downcase
+    # Prevent further prompting if player didn't choose to hit in a previous pass through loop.
+    if hit_or_stand == "hit"
+      loop do
+        puts "Would you like to (hit) or (stand)?"
+        hit_or_stand = gets.chomp.downcase
+        break if hit_or_stand == "stand" || hit_or_stand =="hit"
+        puts "Please enter a valid input of 'hit' or 'stand'"
+      end
     end
 
     # Player hit or stand
@@ -161,7 +161,7 @@ loop do
     display_hands(player_hand, computer_hand, player_name)
 
     # Check for player bust
-    if bust?(player_hand)
+    if calculate_hand_value(player_hand) > 21
       display_final_hands(player_hand, computer_hand, player_name)
       puts "#{player_name} busts!"
       puts "Computer wins.  :-("
@@ -169,17 +169,17 @@ loop do
     end
 
     # Should Computer hit?
-    if get_hand_value(computer_hand) < 17
+    if calculate_hand_value(computer_hand) < 17
       puts "Computer hits."
       deal_card(computer_hand, card_deck)
-    elsif get_hand_value(computer_hand) >= 17 && get_hand_value(computer_hand) <= 21
+    elsif calculate_hand_value(computer_hand) >= 17 && calculate_hand_value(computer_hand) <= 21
       puts "Computer stands."
     end
 
     display_hands(player_hand, computer_hand, player_name)
 
     # Check for computer bust
-    if bust?(computer_hand)
+    if calculate_hand_value(computer_hand) > 21
       display_final_hands(player_hand, computer_hand, player_name)
       puts "Computer busts!"
       puts "#{player_name} wins!"
@@ -189,8 +189,8 @@ loop do
     display_hands(player_hand, computer_hand, player_name)
 
     # Check for victory if player stands and player/computer didn't bust earlier.  Iterate again if computer is < 17.
-    if hit_or_stand == "stand"
-      if get_hand_value(computer_hand) < 17
+    if hit_or_stand != "hit"
+      if calculate_hand_value(computer_hand) < 17
         next
       else
         check_final_winner(player_hand, computer_hand, player_name)
